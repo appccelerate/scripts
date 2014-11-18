@@ -1,0 +1,20 @@
+#!/bin/bash
+ 
+if git-rev-parse --verify HEAD >/dev/null 2>&1; then
+    against=HEAD
+else
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+ 
+for FILE in `git diff-index --cached --name-status $against -- | cut -c3-` ; do
+    if [[ "$FILE" == *packages.config ]]; then        
+        FOUND=$(grep 'local' "$FILE")        
+        if [ ! -z "$FOUND" ]
+        then
+            echo $FILE ' contains local references:'
+            echo $FOUND
+            exit 1
+        fi
+    fi
+done
+exit 
