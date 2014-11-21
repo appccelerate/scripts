@@ -82,19 +82,19 @@ function Out-HostColored
     )
 
     Begin {
-        $errorRegex = (".*Test Failure.*", ".*(FAIL).*", ".*error MSB.*:.*", ".*error CS.*:.*") -join "|";
+        $errorRegex = (".*Test Failure.*", ".*(FAIL).*", ".*error MSB.*:.*", ".*error CS.*:.*", ".*error :") -join "|";
         $stylecopRegex = (".*error : SA.*") -join "|";
         $warningRegex = (".*warning :.*") -join "|";
     }
 
     Process {
-        if($msg -cmatch $errorRegex)
-        {
-            Write-Host $msg -ForegroundColor Red
-        }
-        elseif($msg -cmatch $stylecopRegex)
+        if($msg -cmatch $stylecopRegex)
         {
             Write-Host $msg -ForegroundColor Magenta
+        }
+        elseif($msg -cmatch $errorRegex)
+        {
+            Write-Host $msg -ForegroundColor Red
         }
         elseif($msg -cmatch $warningRegex)
         {
