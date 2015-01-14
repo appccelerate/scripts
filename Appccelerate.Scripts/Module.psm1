@@ -28,6 +28,8 @@ function GetStatus
             $ahead = git -C "$SharedRepoRoot\$repo" rev-list origin/master..master --count
             $behind = git -C "$SharedRepoRoot\$repo" rev-list master..origin/master --count
             
+            Write-Host $localchanges
+            
             $info = @{}
             $info.Repo = $repo
             $info.Modified = @{$true="modified"}[$localchanges.Length -gt 0]
