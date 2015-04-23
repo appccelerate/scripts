@@ -536,6 +536,7 @@ function InstallGitHooks
 
 $repositories = @(
     "bootstrapper",
+    "commandlineparser",
     "CheckHintPathTask",
     "CheckNoBindingRedirectsTask",
     "CheckNugetDependenciesTask",
