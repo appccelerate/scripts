@@ -51,6 +51,47 @@ function GetStatus
     }
 }
 
+function Clone {
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromPipeline=$True)]
+        [ValidateSet("all")]
+        [string[]]
+        $Repositories="All",
+        
+        [Parameter(Mandatory=1)]
+        [string]$user
+    )
+    
+    Begin {
+        $sw = [Diagnostics.Stopwatch]::StartNew()
+        $startTime = Get-Date
+    }
+    
+    Process {
+        Write-HeaderMessage "cloning"
+
+        $repos = ResolveRepos $Repositories "Clone"
+
+        foreach ($repo in $repos)
+        {
+            Write-Message "cloning $repo"
+            Exec { git clone https://github.com/$user/$repo.git "$SharedRepoRoot\$repo" }
+        }        
+    }
+    
+    End {
+        $sw.Stop()
+        $endTime = Get-Date
+        $elapsed = $sw.Elapsed
+
+        Write-HeaderSuccess "PULL SUCCESSFUL"
+        Write-Message " Start: $startTime"
+        Write-Message " End:   $endTime"
+        Write-Message " Took:  $elapsed"
+    }
+}
+
 function Pull {
     [CmdletBinding()]
     param(
@@ -557,6 +598,7 @@ $repositories = @(
 
 Update-ValidateSet (Get-Command -Name "GetStatus") "Repositories" ($repositories + @("all"))
 Update-ValidateSet (Get-Command -Name "Pull") "Repositories" ($repositories + @("all"))
+Update-ValidateSet (Get-Command -Name "Clone") "Repositories" ($repositories + @("all"))
 Update-ValidateSet (Get-Command -Name "CheckNugetDependenciesForConflictingVersions") "Repositories" ($repositories + @("all"))
 Update-ValidateSet (Get-Command -Name "GetNugetDependencyChains") "Repositories" ($repositories + @("all"))
 Update-ValidateSet (Get-Command -Name "UpdatePackage") "Repositories" ($repositories + @("all"))
