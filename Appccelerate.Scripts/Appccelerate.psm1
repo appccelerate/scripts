@@ -1,5 +1,10 @@
 . "$PSScriptRoot\Common.ps1"
 
+function ShowCommandlets
+{
+    get-command -Module Appccelerate
+}
+
 function GetStatus
 {
     [CmdletBinding()]

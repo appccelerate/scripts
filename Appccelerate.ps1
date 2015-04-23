@@ -1,2 +1,2 @@
 
-Import-Module "$PSScriptRoot\Appccelerate.Scripts\Module.psm1" -DisableNameChecking
+Import-Module "$PSScriptRoot\Appccelerate.Scripts\Appccelerate.psm1" -DisableNameChecking

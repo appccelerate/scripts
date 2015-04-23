@@ -30,9 +30,9 @@
     <Content Include="Common.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Module.psd1" />
-    <Compile Include="Module.psm1" />
-    <Compile Include="Module.test.ps1" />
+    <Compile Include="Appccelerate.psd1" />
+    <Compile Include="Appccelerate.psm1" />
+    <Compile Include="Appccelerate.test.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
