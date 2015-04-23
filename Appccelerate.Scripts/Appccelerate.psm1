@@ -174,7 +174,10 @@ function UpdatePackage
 
         [Parameter()]
         [string]
-        $Source="https://www.nuget.org/api/v2;https://www.myget.org/F/appccelerate/"
+        $Source="https://www.nuget.org/api/v2;https://www.myget.org/F/appccelerate/",
+        
+        [Parameter()]
+        [Switch]$Prerelease
     )
 
     $repos = ResolveRepos $Repositories "UpdatePackage"
@@ -210,7 +213,15 @@ function UpdatePackage
 
                 Write-Message "Updating packages: $configFilePath"
                 Write-Message "  $packagesToUpdateOneLine"
-                Exec { nuget update $configFilePath -Source "$Source" -Id "$packagesToUpdateOneLine" -NonInteractive -Verbose -Verbosity detailed }
+                
+                if($Prerelease)
+                {
+                    Exec { nuget update $configFilePath -Source "$Source" -Id "$packagesToUpdateOneLine" -NonInteractive -Verbose -Verbosity detailed -Prerelease }
+                }
+                else
+                {
+                    Exec { nuget update $configFilePath -Source "$Source" -Id "$packagesToUpdateOneLine" -NonInteractive -Verbose -Verbosity detailed }
+                }
             }
         }
     }
@@ -233,8 +244,7 @@ function UpdateLocally
     )
 
     $repo = "$SharedRepoRoot\$SourceRepo"
-    $settings = $repoSettings[$SourceRepo]
-
+    
     $solutionFile = "$SharedRepoRoot\$SourceRepo\source\Appccelerate.$SourceRepo.sln"
     $packageId = "Appccelerate.$SourceRepo"
     
@@ -279,7 +289,7 @@ function UpdateLocally
 
     ############################################
     ## Build nuget packages
-    CreateLocalNugetPackages $SourceRepo $nugetPackagesFolder -skipAppccelerateVersionInstallation 
+    CreateLocalNugetPackages $SourceRepo $nugetPackagesFolder -skipAppccelerateVersionInstallation -version $localVersion
 
 
     ############################################
@@ -288,7 +298,7 @@ function UpdateLocally
     
     $repos = ResolveRepos $Repositories "UpdateLocally"
 
-    UpdatePackage -Id $packageId -Repositories $repos -Source $nugetPackagesFolder 
+    UpdatePackage -Id $packageId -Repositories $repos -Source $nugetPackagesFolder -Prerelease
 
     ############################################
     ## Extro
@@ -399,7 +409,9 @@ function CreateLocalNugetPackages
         [Parameter()]
         [switch]$skipAppccelerateVersionInstallation,
         [Parameter()]
-        [switch]$skipIntegrate
+        [switch]$skipIntegrate,
+        [Parameter()]
+        [string]$version=""
     )
 
     $repos = ResolveRepos $Repositories "CreateLocalNugetPackages"
@@ -415,8 +427,11 @@ function CreateLocalNugetPackages
             BuildSolution -repo $repo -solution "Appccelerate.$repo.sln"
         }
 
-        $version = GetVersion $repo $skipAppccelerateVersionInstallation
-    
+        if ($version -eq "")
+        {
+            $version = GetVersion $repo $skipAppccelerateVersionInstallation
+        }
+            
         $nuspecs = Get-ChildItem -Recurse "$SharedRepoRoot\$repo\source\" -Include appccelerate*.nuspec
         foreach ($nuspec in $nuspecs)
         {
