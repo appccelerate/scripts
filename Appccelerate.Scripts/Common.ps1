@@ -196,9 +196,8 @@ function GetVersion
     }
 
     # Determine version
-    $version_output = Exec { & $versionExe $repo } -DirectOutput
-    $version = $version_output[2].ToString().Replace('"', "").Replace(",", "").Replace("NugetVersion: ", "")  # output is NugetVersion: <version>   e.g. "NugetVersion": "2.5.0",
-
+    $version = Exec { & $versionExe $repo --output nugetversion } -DirectOutput
+    
     Write-Message "calculated version: $version"
 
     return $version
